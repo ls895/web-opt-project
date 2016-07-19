@@ -36,9 +36,6 @@ module.exports = function(grunt) {
             }
         },
         processhtml: {
-            options: {
-              // Task-specific options go here.
-            },
             dist: {
                 files: {
                     'dist/index.html': ['src/index.html']
@@ -50,15 +47,24 @@ module.exports = function(grunt) {
               engine: 'im',
               sizes: [{
                   name: '1x',
-                  width: '128px'
+                  width: '100px'
               }, {
                   name: '2x',
-                  width: '256px'
+                  width: '200px'
               }]
             },
             dist: {
                 files: {
                     'dist/views/images/pizzeria.jpg': 'src/views/images/pizzeria.jpg'
+                }
+            }
+        },
+        imagemin: {
+            dist: { 
+                files: {
+                  'dist/img/profilepic.jpg': 'src/img/profilepic.jpg',
+                  'dist/views/images/pizzeria-1x.jpg': 'dist/views/images/pizzeria-1x.jpg',
+                  'dist/views/images/pizzeria-2x.jpg': 'dist/views/images/pizzeria-2x.jpg'
                 }
             }
         }
@@ -69,6 +75,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
     grunt.loadNpmTasks('grunt-processhtml');
     grunt.loadNpmTasks('grunt-responsive-images');
+    grunt.loadNpmTasks('grunt-contrib-imagemin');
     
-    grunt.registerTask('default', ['uglify', 'cssmin', 'responsive_images', 'processhtml', 'htmlmin']);
+    grunt.registerTask('default', ['uglify', 'cssmin', 'responsive_images', 'imagemin', 'processhtml', 'htmlmin']);
 };
