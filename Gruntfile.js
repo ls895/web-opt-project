@@ -32,28 +32,51 @@ module.exports = function(grunt) {
                 },
                 files: {
                     'dist/index.html': 'dist/index.html',
+                    'dist/project-2048.html': ['dist/project-2048.html'],
+                    'dist/project-mobile.html': ['dist/project-mobile.html'],
+                    'dist/project-webperf.html': ['dist/project-webperf.html'],
+                    'dist/views/pizza.html': ['dist/views/pizza.html'],
                 }
             }
         },
         processhtml: {
             dist: {
                 files: {
-                    'dist/index.html': ['src/index.html']
+                    'dist/index.html': ['src/index.html'],
+                    'dist/project-2048.html': ['src/project-2048.html'],
+                    'dist/project-mobile.html': ['src/project-mobile.html'],
+                    'dist/project-webperf.html': ['src/project-webperf.html'],
+                    'dist/views/pizza.html': ['src/views/pizza.html'],
+                    
                 }
             },
         },
         responsive_images: {
             options: {
               engine: 'im',
-              sizes: [{
-                  name: '1x',
-                  width: '100px'
-              }, {
-                  name: '2x',
-                  width: '200px'
-              }]
+              newFilesOnly: false
             },
-            dist: {
+            index: {
+                options: {
+                    sizes: [{
+                      name: '1x',
+                      width: '100px'
+                    }, {
+                      name: '2x',
+                      width: '200px'
+                    }]
+                },
+                files: {
+                    'dist/views/images/pizzeria.jpg': 'src/views/images/pizzeria.jpg'
+                }
+            },
+            pizza: {
+                options: {
+                    sizes: [{
+                      rename: false,
+                      width: '720px'
+                    }]
+                },
                 files: {
                     'dist/views/images/pizzeria.jpg': 'src/views/images/pizzeria.jpg'
                 }
@@ -64,7 +87,9 @@ module.exports = function(grunt) {
                 files: {
                   'dist/img/profilepic.jpg': 'src/img/profilepic.jpg',
                   'dist/views/images/pizzeria-1x.jpg': 'dist/views/images/pizzeria-1x.jpg',
-                  'dist/views/images/pizzeria-2x.jpg': 'dist/views/images/pizzeria-2x.jpg'
+                  'dist/views/images/pizzeria-2x.jpg': 'dist/views/images/pizzeria-2x.jpg',
+                  'dist/views/images/pizzeria.jpg': 'dist/views/images/pizzeria.jpg',
+                  'dist/views/images/pizza.png': 'src/views/images/pizza.png'
                 }
             }
         }
