@@ -405,49 +405,45 @@ var resizePizzas = function(size) {
   window.performance.mark("mark_start_resize");   // User Timing API function
 
   // Changes the value for the size of the pizza above the slider
-  function changeSliderLabel(size) {
-    switch(size) {
-      case "1":
-        document.querySelector("#pizzaSize").innerHTML = "Small";
-        return;
-      case "2":
-        document.querySelector("#pizzaSize").innerHTML = "Medium";
-        return;
-      case "3":
-        document.querySelector("#pizzaSize").innerHTML = "Large";
-        return;
-      default:
-        console.log("bug in changeSliderLabel");
-    }
+  switch(size) {
+    case "1":
+      document.querySelector("#pizzaSize").innerHTML = "Small";
+      break;
+    case "2":
+      document.querySelector("#pizzaSize").innerHTML = "Medium";
+      break;
+    case "3":
+      document.querySelector("#pizzaSize").innerHTML = "Large";
+      break;
+    default:
+      console.log("bug in changeSliderLabel");
   }
 
-  changeSliderLabel(size);
 
-    var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
-    // var oldWidth = randomPizzaContainer[0].offsetWidth;
+  var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
+  
+  var newSize;
+  // Changes the slider value to a percent width
 
-    // Changes the slider value to a percent width
-    function sizeSwitcher (size) {
-      switch(size) {
-        case "1":
-          return 0.25;
-        case "2":
-          return 0.3333;
-        case "3":
-          return 0.5;
-        default:
-          console.log("bug in sizeSwitcher");
-      }
-    }
-
-    var newSize = sizeSwitcher(size);
+  switch(size) {
+    case "1":
+      newSize = 0.25;
+      break;
+    case "2":
+      newSize = 0.3333;
+      break;
+    case "3":
+      newSize = 0.5;
+      break;
+    default:
+      console.log("bug in sizeSwitcher");
+  }
     
-    var newWidth = newSize * windowWidth;
+  var newWidth = newSize * windowWidth;
 
   // Iterates through pizza elements on the page and changes their widths
   for (var i = 0; i < pizzaContainerLength; i++) {
-    var newwidth = newWidth + 'px';
-    randomPizzaContainer[i].style.width = newwidth;
+    randomPizzaContainer[i].style.width = newWidth + 'px';
   }
 
   // User Timing API is awesome
@@ -492,6 +488,7 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 
 // Moves the sliding background pizzas based on scroll position
 function updatePositions(para) {
+  // If no parameter is given in the case of scroll listener fallback, request document.body.scrollTop
   var _lastScroll = (para || document.body.scrollTop) / 1250;
   frame++;
   window.performance.mark("mark_start_frame");
@@ -512,10 +509,10 @@ function updatePositions(para) {
 
 // Store the requestAnimationFrame object
 var rAF = window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame ||
-    window.oRequestAnimationFrame ||
-    window.msRequestAnimationFrame;
+  window.webkitRequestAnimationFrame ||
+  window.mozRequestAnimationFrame ||
+  window.oRequestAnimationFrame ||
+  window.msRequestAnimationFrame;
 
 // Store the scroll position at page first load
 var lastScroll = document.body.scrollTop;
@@ -524,6 +521,7 @@ var lastScroll = document.body.scrollTop;
 function customScroll() {
   // Update the current scroll position at each customScroll call
   var cacheScroll = document.body.scrollTop;
+  // Detect scrolling
   if (cacheScroll === lastScroll) {
     // If no scrolling, register customScroll to be called for next frame
     rAF(customScroll);    
@@ -532,11 +530,12 @@ function customScroll() {
     // Otherwise update lastScroll to current scroll position and call updatePositions
     lastScroll = cacheScroll;
     updatePositions(lastScroll);
-    // Once updatePositions finish, register customScroll to be called for next frame
+    // Once updatePositions returns, register customScroll to be called for next frame
     rAF(customScroll);
   }
 }
 
+// Store reference for .mover class
 var itemsMover;
 
 // Generates the sliding pizzas when the page loads.
@@ -553,13 +552,15 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
+  // Assign itemsMover
   itemsMover = document.querySelectorAll('.mover');
+  // Position .mover initially on page first load
   updatePositions(lastScroll);
   if (rAF) {
     // Call customScroll to register requestAnimationFrame
     customScroll();
   } else {
-    // Fallback to scroll event listener
+    // Fallback to register a scroll event listener
     window.addEventListener('scroll', updatePositions);
   }
 });
