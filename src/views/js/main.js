@@ -497,16 +497,14 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
 // Moves the sliding background pizzas based on scroll position
-function updatePositions() {
+function updatePositions(lastScroll) {
   frame++;
   window.performance.mark("mark_start_frame");
-
-  var items = document.querySelectorAll('.mover');
-  var cacheScrollTop = document.body.scrollTop / 1250;
-  for (var i = 0; i < items.length; i++) {
+  var cacheScrollTop = lastScroll / 1250;
+  for (var i = 0; i < itemsMover.length; i++) {
     var phase = Math.sin(cacheScrollTop + (i % 5));
     // items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
-    items[i].style.transform = 'translateX(' + (items[i].basicLeft + 100 * phase) + 'px)'; 
+    itemsMover[i].style.transform = 'translateX(' + (itemsMover[i].basicLeft + 100 * phase) + 'px)'; 
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -519,8 +517,33 @@ function updatePositions() {
   }
 }
 
+// Store the requestAnimationFrame object
+var rAF = window.requestAnimationFrame;
+
+// Store the scroll position at page first load
+var lastScroll = document.body.scrollTop;
+
+// Loop for requestAnimationFrame
+function customScroll() {
+  // Update the current scroll position at each customScroll call
+  var cacheScroll = document.body.scrollTop;
+  if (cacheScroll === lastScroll) {
+    // If no scrolling, register customScroll to be called for next frame
+    rAF(customScroll);    
+    return;
+  } else {
+    // Otherwise update lastScroll to current scroll position and call updatePositions
+    lastScroll = cacheScroll;
+    updatePositions(lastScroll);
+    // Once updatePositions finish, register customScroll to be called for next frame
+    rAF(customScroll);
+  }
+}
+
 // runs updatePositions on scroll
-window.addEventListener('scroll', updatePositions);
+// window.addEventListener('scroll', updatePositions);
+
+var itemsMover;
 
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
@@ -536,5 +559,8 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
-  updatePositions();
+  itemsMover = document.querySelectorAll('.mover');
+  updatePositions(lastScroll);
+  // Call customScroll and register requesetAnimationFrame to standby for scroll
+  customScroll();
 });
