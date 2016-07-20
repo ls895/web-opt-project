@@ -3,14 +3,9 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         uglify: {
             dist: {
-                files: [{
-                    expand: true,
-                    cwd: 'src',
-                    dest: 'dist',
-                    src: ['**/*.js'],
-                    ext: '.min.js',
-                    extDot: 'first'
-                }]
+                files: {
+                    'dist/js/perfmatters.min.js': 'src/js/perfmatters.js'
+                }
             }
         },
         cssmin: {
@@ -19,9 +14,14 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'src',
                     dest: 'dist',
-                    src: ['**/*.css'],
+                    src: ['css/*.css'],
                     ext: '.min.css'
                 }]
+            },
+            pizza: {
+                files: {
+                    'dist/views/css/bootstrap-grid.min.css': 'src/views/css/bootstrap-grid.css'
+                }
             }
         },
         htmlmin: {
@@ -34,8 +34,7 @@ module.exports = function(grunt) {
                     'dist/index.html': 'dist/index.html',
                     'dist/project-2048.html': ['dist/project-2048.html'],
                     'dist/project-mobile.html': ['dist/project-mobile.html'],
-                    'dist/project-webperf.html': ['dist/project-webperf.html'],
-                    'dist/views/pizza.html': ['dist/views/pizza.html'],
+                    'dist/project-webperf.html': ['dist/project-webperf.html']
                 }
             }
         },
@@ -46,8 +45,7 @@ module.exports = function(grunt) {
                     'dist/project-2048.html': ['src/project-2048.html'],
                     'dist/project-mobile.html': ['src/project-mobile.html'],
                     'dist/project-webperf.html': ['src/project-webperf.html'],
-                    'dist/views/pizza.html': ['src/views/pizza.html'],
-                    
+                    'dist/views/pizza.html': ['src/views/pizza.html']
                 }
             },
         },
@@ -86,10 +84,21 @@ module.exports = function(grunt) {
             dist: { 
                 files: {
                   'dist/img/profilepic.jpg': 'src/img/profilepic.jpg',
+                  'dist/img/2048.png': 'src/img/2048.png',
+                  'dist/img/cam_be_like.jpg': 'src/img/cam_be_like.jpg',
+                  'dist/img/mobilewebdev.jpg': 'src/img/mobilewebdev.jpg',
                   'dist/views/images/pizzeria-1x.jpg': 'dist/views/images/pizzeria-1x.jpg',
                   'dist/views/images/pizzeria-2x.jpg': 'dist/views/images/pizzeria-2x.jpg',
                   'dist/views/images/pizzeria.jpg': 'dist/views/images/pizzeria.jpg',
                   'dist/views/images/pizza.png': 'src/views/images/pizza.png'
+                }
+            }
+        },
+        copy: {
+            dist: {
+                files: {
+                    'dist/views/css/style.css': 'src/views/css/style.css',
+                    'dist/views/js/main.js': 'src/views/js/main.js'
                 }
             }
         }
@@ -101,6 +110,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-processhtml');
     grunt.loadNpmTasks('grunt-responsive-images');
     grunt.loadNpmTasks('grunt-contrib-imagemin');
+    grunt.loadNpmTasks('grunt-contrib-copy');
     
-    grunt.registerTask('default', ['uglify', 'cssmin', 'responsive_images', 'imagemin', 'processhtml', 'htmlmin']);
+    grunt.registerTask('default', ['uglify', 'cssmin', 'responsive_images', 'imagemin', 'processhtml', 'htmlmin', 'copy']);
 };
