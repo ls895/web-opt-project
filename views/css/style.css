@@ -31,11 +31,14 @@ form {
 
 .mover {
   position: fixed;
+  /*Assign a left property so correct screen position is retained when using translateX*/
   left: 0;
   width: 256px;
+  /*Notify browser .mover will translate to elevate .mover into their own layer*/
   will-change: transform;
 }
 
+/*z-index taken out of .mover and put into #movingPizzas1 to reduce style re-calculation time*/
 #movingPizzas1 {
   z-index: -1;
 }
