@@ -52,7 +52,7 @@ module.exports = function(grunt) {
     responsive_images: {
       options: {
         engine: 'im',
-        newFilesOnly: false
+        newFilesOnly: true
       },
       index: {
         options: {
