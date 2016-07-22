@@ -447,8 +447,8 @@ var resizePizzas = function(size) {
 window.performance.mark("mark_start_generating"); // collect timing data
 
 // This for-loop actually creates and appends all of the pizzas when the page loads
+var pizzasDiv = document.getElementById("randomPizzas");
 for (var i = 2; i < 100; i++) {
-  var pizzasDiv = document.getElementById("randomPizzas");
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
@@ -472,6 +472,7 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
   console.log("Average scripting time to generate last 10 frames: " + sum / 10 + "ms");
 }
 
+var mod5 =[];
 // The following code for sliding background pizzas was pulled from Ilya's demo found at:
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
@@ -483,10 +484,13 @@ function updatePositions(lastScroll) {
 
   // If no parameter is given in the case of scroll listener fallback, request document.body.scrollTop
   var sinInput = (lastScroll || document.body.scrollTop) / 1250;
+  mod5.length = 0;
+  for (var j = 0; j < 5; j++) {
+    mod5.push(Math.sin(sinInput + j) * 100);
+  }
   for (var i = 0; i < itemsMover.length; i++) {
-    var phase = Math.sin(sinInput + i % 5);
     // Use translateX to replace left as css property to increase speed
-    itemsMover[i].style.transform = 'translateX(' + (itemsMover[i].basicLeft + 100 * phase) + 'px)'; 
+    itemsMover[i].style.transform = 'translateX(' + (itemsMover[i].basicLeft + mod5[i % 5]) + 'px)'; 
   }
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
@@ -540,7 +544,9 @@ function customScroll() {
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
   var s = 256;
-  for (var i = 0; i < 200; i++) {
+  var vpHeight = window.innerHeight - 100;
+  var rows = Math.floor(vpHeight / s) + 2;
+  for (var i = 0; i < cols * rows; i++) {
     var elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
