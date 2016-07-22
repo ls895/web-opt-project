@@ -398,50 +398,41 @@ var pizzaElementGenerator = function(i) {
   return pizzaContainer;
 };
 
-
-
 // resizePizzas(size) is called when the slider in the "Our Pizzas" section of the website moves.
 var resizePizzas = function(size) {
+  // Check if .mover pizzas are populated
+  if (!itemsMover.length) {
+    console.log("wait until pizzas are loaded and try again");
+    return;
+  }
+
   window.performance.mark("mark_start_resize");   // User Timing API function
 
-  // Changes the value for the size of the pizza above the slider
+  var newWidth;
+
+  // Keep updating window width at each call in case user resize the browser between slider clicks
+  // Performance impact is minimal
+  var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
+
+  // Changes the value for the size of the pizza above the slider and determine newWidth
   switch(size) {
     case "1":
       document.querySelector("#pizzaSize").innerHTML = "Small";
+      newWidth = 0.25 * windowWidth;
       break;
     case "2":
       document.querySelector("#pizzaSize").innerHTML = "Medium";
+      newWidth = 0.3333 * windowWidth;
       break;
     case "3":
       document.querySelector("#pizzaSize").innerHTML = "Large";
+      newWidth = 0.5 * windowWidth;
       break;
     default:
-      console.log("bug in changeSliderLabel");
+      console.log("bug in changing sliders");
   }
 
-
-  var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
-  
-  var newSize;
-  // Changes the slider value to a percent width
-
-  switch(size) {
-    case "1":
-      newSize = 0.25;
-      break;
-    case "2":
-      newSize = 0.3333;
-      break;
-    case "3":
-      newSize = 0.5;
-      break;
-    default:
-      console.log("bug in sizeSwitcher");
-  }
-    
-  var newWidth = newSize * windowWidth;
-
-  // Iterates through pizza elements on the page and changes their widths
+  // Iterates through pizza elements on the page and change their widths
   for (var i = 0; i < pizzaContainerLength; i++) {
     randomPizzaContainer[i].style.width = newWidth + 'px';
   }
@@ -460,8 +451,6 @@ for (var i = 2; i < 100; i++) {
   var pizzasDiv = document.getElementById("randomPizzas");
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
-var randomPizzaContainer = document.querySelectorAll(".randomPizzaContainer");
-var pizzaContainerLength = randomPizzaContainer.length;
 
 // User Timing API again. These measurements tell you how long it took to generate the initial pizzas
 window.performance.mark("mark_end_generating");
@@ -487,13 +476,16 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // https://www.igvita.com/slides/2012/devtools-tips-and-tricks/jank-demo.html
 
 // Moves the sliding background pizzas based on scroll position
-function updatePositions(para) {
-  // If no parameter is given in the case of scroll listener fallback, request document.body.scrollTop
-  var _lastScroll = (para || document.body.scrollTop) / 1250;
+// Takes scroll position as parameter
+function updatePositions(lastScroll) {
   frame++;
   window.performance.mark("mark_start_frame");
+
+  // If no parameter is given in the case of scroll listener fallback, request document.body.scrollTop
+  var sinInput = (lastScroll || document.body.scrollTop) / 1250;
   for (var i = 0; i < itemsMover.length; i++) {
-    var phase = Math.sin(_lastScroll + i % 5);
+    var phase = Math.sin(sinInput + i % 5);
+    // Use translateX to replace left as css property to increase speed
     itemsMover[i].style.transform = 'translateX(' + (itemsMover[i].basicLeft + 100 * phase) + 'px)'; 
   }
 
@@ -509,15 +501,24 @@ function updatePositions(para) {
 
 // Store the requestAnimationFrame object
 var rAF = window.requestAnimationFrame ||
-  window.webkitRequestAnimationFrame ||
-  window.mozRequestAnimationFrame ||
-  window.oRequestAnimationFrame ||
-  window.msRequestAnimationFrame;
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame ||
+          window.oRequestAnimationFrame ||
+          window.msRequestAnimationFrame;
 
-// Store the scroll position at page first load
+// Ensure a scroll position is stored before any event listener fires
 var lastScroll = document.body.scrollTop;
 
-// Loop for requestAnimationFrame
+// Store reference for .mover class at script execution
+var itemsMover;
+
+// Store reference to .randomPizzaContainer at script execution
+var randomPizzaContainer = document.querySelectorAll(".randomPizzaContainer");
+
+// Store reference to pizza container length at script execution
+var pizzaContainerLength = randomPizzaContainer.length;
+
+// Loop for requestAnimationFrame, replacing the original scroll event listener
 function customScroll() {
   // Update the current scroll position at each customScroll call
   var cacheScroll = document.body.scrollTop;
@@ -535,9 +536,6 @@ function customScroll() {
   }
 }
 
-// Store reference for .mover class
-var itemsMover;
-
 // Generates the sliding pizzas when the page loads.
 document.addEventListener('DOMContentLoaded', function() {
   var cols = 8;
@@ -552,15 +550,15 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     document.querySelector("#movingPizzas1").appendChild(elem);
   }
-  // Assign itemsMover
+  // Assign .mover reference
   itemsMover = document.querySelectorAll('.mover');
-  // Position .mover initially on page first load
+  // Position the pizzas initially on page first load
   updatePositions(lastScroll);
   if (rAF) {
     // Call customScroll to register requestAnimationFrame
     customScroll();
   } else {
-    // Fallback to register a scroll event listener
+    // Other fallback to register a scroll event listener
     window.addEventListener('scroll', updatePositions);
   }
 });
